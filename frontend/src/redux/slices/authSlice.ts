@@ -1,10 +1,10 @@
-// src/redux/slices/authSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie'; // Correct import
 
 interface AuthState {
   token: string | null;
   userId: string | null;
-  isAuthenticated: boolean; // Explicitly track isAuthenticated
+  isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
 }
@@ -27,13 +27,15 @@ const authSlice = createSlice({
     ) => {
       state.token = action.payload.token;
       state.userId = action.payload.userId;
-      state.isAuthenticated = true; // Set isAuthenticated to true
+      state.isAuthenticated = true;
+      Cookies.set('token', action.payload.token); // Use Cookies from js-cookie
       state.error = null;
     },
     clearCredentials: (state) => {
       state.token = null;
       state.userId = null;
-      state.isAuthenticated = false; // Set isAuthenticated to false
+      state.isAuthenticated = false;
+      Cookies.remove('token'); // Use Cookies from js-cookie
       state.error = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

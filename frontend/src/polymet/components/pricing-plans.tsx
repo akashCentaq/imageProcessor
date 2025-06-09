@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckIcon, CreditCardIcon } from "lucide-react";
-import { PRICING_PLANS } from "@/polymet/data/user-credits";
+import { useGetAllPlansQuery } from "@/redux/lib/plans";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 export default function PricingPlans() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { data: plansData, isLoading, error } = useGetAllPlansQuery();
 
   const handlePurchase = (planId: string) => {
     setSelectedPlan(planId);
@@ -39,6 +40,16 @@ export default function PricingPlans() {
     alert("Purchase successful! Credits have been added to your account.");
   };
 
+  if (isLoading) {
+    return <div>Loading pricing plans...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading pricing plans: {error.toString()}</div>;
+  }
+
+  const plans = plansData?.plans || [];
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -51,16 +62,16 @@ export default function PricingPlans() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {PRICING_PLANS.map((plan, index) => (
+        {plans.map((plan, index) => (
           <Card
             key={plan.id}
             className={`flex flex-col ${
-              plan.popular
+              plan.name === "Business" // Assuming "Business" is the popular plan
                 ? "border-primary shadow-md dark:shadow-primary/20"
                 : ""
             }`}
           >
-            {plan.popular && (
+            {plan.name === "Business" && (
               <Badge
                 variant="default"
                 className="absolute right-4 top-4 rounded-sm px-2"
@@ -71,7 +82,7 @@ export default function PricingPlans() {
             <CardHeader>
               <CardTitle>{plan.name}</CardTitle>
               <CardDescription>
-                <span className="text-2xl font-bold">${plan.price}</span>
+                <span className="text-2xl font-bold">${(plan.price / 100).toFixed(2)}</span>
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
@@ -91,7 +102,7 @@ export default function PricingPlans() {
             <CardFooter>
               <Button
                 className="w-full"
-                variant={plan.popular ? "default" : "outline"}
+                variant={plan.name === "Business" ? "default" : "outline"}
                 onClick={() => handlePurchase(plan.id)}
               >
                 Purchase

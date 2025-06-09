@@ -19,9 +19,11 @@ model User {
   number_verified     Boolean          @default(false)
   role                String           @default("User")
   plan                String           @default("Free")
+  creditsExpireAt     DateTime?        // Tracks when the current credits expire
   createdAt           DateTime         @default(now())
   orders              Order[]          // Relation to orders created by the user
   billingRecords      BillingRecord[]  // Relation to billing records for the user
+  payments            Payment[]        // Relation to payments made by the user
 }
 
 model Order {
@@ -96,4 +98,28 @@ model BillingRecord {
   service      Service  @relation(fields: [serviceId], references: [id])
   creditsUsed  Int
   createdAt    DateTime @default(now())
+}
+
+model PricingPlan {
+  id           String   @id @default(uuid())
+  name         String   // e.g., "Starter", "Professional", "Business", "Enterprise"
+  price        Int      // Store in smallest currency unit (e.g., cents, so $9.99 = 999)
+  credits      Int      // Number of credits (e.g., 50, 150, 350, 1000)
+  validityDays Int      // Validity in days (e.g., 30, 60, 90, 365)
+  features     String[] // List of features (e.g., ["Basic editing features", "Email support"])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  payments     Payment[] // Relation to payments associated with this plan
+}
+
+model Payment {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [googleId]) // Fixed relation
+  pricingPlanId    String?     // Optional, links to the purchased plan
+  pricingPlan      PricingPlan? @relation(fields: [pricingPlanId], references: [id])
+  paymentNumber    String      @unique // e.g., transaction ID from Stripe/Razorpay/etc.
+  creditsPurchased Int
+  amountPaid       Int         // Store in smallest currency unit (e.g., paise or cents)
+  createdAt        DateTime    @default(now())
 }

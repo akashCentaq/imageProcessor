@@ -18,9 +18,10 @@ import{ UsageHistoryChart }from "@/polymet/components/usage-history-chart";
 import PricingPlans from "@/polymet/components/pricing-plans";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { useGetProfileQuery, useGetAllServicesQuery } from "@/redux/lib/api";
+import { useGetProfileQuery } from "@/redux/lib/api";
 import { useGetAllTransactionsQuery } from "@/redux/lib/transactionsApi";
 import { DateIntervalSelector } from "../components/dateIntervalSelector";
+import { useGetAllServicesQuery } from "@/redux/lib/serviceApi";
 
 export default function CreditsPage() {
   const [activeTab, setActiveTab] = useState("overview");
