@@ -64,6 +64,48 @@ export const checkOrderStatus = async (req: AuthenticatedRequest, res: Response)
         Contents.map(async (object) => {
           if (object.Key) {
             const fileName = object.Key.split('/').pop() || '';
+            const filePath = object.Key;
+
+            // Check if file already exists in File table
+            let file = await prisma.file.findFirst({
+              where: { orderId, fileName, filePath },
+            });
+
+            // If file doesn't exist, create it in File table
+            if (!file) {
+              file = await prisma.file.create({
+                data: {
+                  orderId,
+                  fileName,
+                  filePath,
+                },
+              });
+            }
+
+            // Check if file is already in Outgoing table
+            const existingOutgoing = await prisma.outgoing.findFirst({
+              where: { fileId: file.id },
+            });
+
+            // If not in Outgoing, create Outgoing record
+            if (!existingOutgoing) {
+              await prisma.outgoing.create({
+                data: {
+                  fileId: file.id,
+                  orderId,
+                },
+              });
+            }
+
+            // Delete from Incoming table if exists
+            await prisma.incoming.deleteMany({
+              where: {
+                fileId: file.id,
+                orderId,
+              },
+            });
+
+            // Generate signed URL for download
             const downloadUrl = await getSignedUrl(
               s3Client,
               new GetObjectCommand({
