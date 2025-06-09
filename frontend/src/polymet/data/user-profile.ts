@@ -1,0 +1,56 @@
+export const USER_PROFILE = {
+  id: "usr_123456789",
+  firstName: "Alex",
+  lastName: "Morgan",
+  email: "alex.morgan@example.com",
+  avatar: "https://github.com/yusufhilmi.png",
+  role: "User",
+  plan: "Basic",
+  joinDate: "2023-03-15T10:30:00Z",
+  lastLogin: "2024-06-20T14:45:00Z",
+  preferences: {
+    emailNotifications: {
+      processingComplete: true,
+      creditsPurchased: true,
+      creditsLow: true,
+      newsletter: false,
+      tips: true,
+    },
+    defaultServices: {
+      "background-replacement": true,
+      "skin-smoothing": true,
+      "color-correction": false,
+      "stray-hair": false,
+      "pimple-removal": false,
+      "glass-glare": false,
+      "crop-resize": true,
+      "advanced-retouching": false,
+    },
+    theme: "system",
+    language: "en",
+  },
+  security: {
+    twoFactorEnabled: false,
+    lastPasswordChange: "2023-09-10T08:15:00Z",
+    sessions: [
+      {
+        device: "Chrome on Windows",
+        location: "New York, USA",
+        lastActive: "2024-06-20T14:45:00Z",
+        ip: "192.168.1.xxx",
+      },
+      {
+        device: "Safari on iPhone",
+        location: "New York, USA",
+        lastActive: "2024-06-19T10:22:00Z",
+        ip: "192.168.1.xxx",
+      },
+      {
+        device: "Firefox on MacOS",
+        location: "Boston, USA",
+        lastActive: "2024-06-15T16:30:00Z",
+        ip: "172.16.254.xxx",
+      },
+    ],
+  },
+};

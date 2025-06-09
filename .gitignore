@@ -1,0 +1,53 @@
+# Global node_modules
+**/node_modules/
+
+# Build output
+**/dist/
+**/build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+**/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE/Editor files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Dependency lock files (optional if you use only one lockfile strategy)
+# You can comment/uncomment depending on your team strategy
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Prisma generated files (optional if generated)
+**/prisma/dev.db
+**/prisma/dev.db-journal
+
+# Frontend specific
+frontend/.next/
+frontend/.turbo/
+frontend/coverage/
+
+# Server specific
+server/coverage/
+
+# Typescript cache
+**/*.tsbuildinfo
+
+# OS specific
+Thumbs.db
+
+# Ignore Google service account keys
+server/src/config/*.json

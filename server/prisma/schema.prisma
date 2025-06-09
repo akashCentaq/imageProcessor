@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String           @id @default(uuid())
+  googleId            String?          @unique
+  email               String           @unique
+  name                String?
+  password            String?
+  credits             Int              @default(0)
+  totalCreditUsage    Int              @default(0)
+  phone_number        String?
+  number_verified     Boolean          @default(false)
+  role                String           @default("User")
+  plan                String           @default("Free")
+  createdAt           DateTime         @default(now())
+  orders              Order[]          // Relation to orders created by the user
+  billingRecords      BillingRecord[]  // Relation to billing records for the user
+}
+
+model Order {
+  id           String           @id @default(uuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  files        File[]           // Relation to files associated with this order
+  incoming     Incoming[]       // Relation to incoming files
+  outgoing     Outgoing[]       // Relation to outgoing files
+  services     OrderService[]   // Relation to services associated with this order
+  billingRecords BillingRecord[] // Relation to billing records for the order
+}
+
+model File {
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  fileName     String
+  filePath     String   // Path or URL to the file in storage
+  createdAt    DateTime @default(now())
+  incoming     Incoming? // Optional relation to Incoming
+  outgoing     Outgoing? // Optional relation to Outgoing
+}
+
+model Incoming {
+  id           String   @id @default(uuid())
+  fileId       String   @unique
+  file         File     @relation(fields: [fileId], references: [id])
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  createdAt    DateTime @default(now())
+  processed    Boolean  @default(false) // Indicates if file has been processed
+}
+
+model Outgoing {
+  id           String   @id @default(uuid())
+  fileId       String   @unique
+  file         File     @relation(fields: [fileId], references: [id])
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model Service {
+  id           String         @id @default(uuid())
+  name         String         // Name of the service
+  cost         Int            // Cost in credits
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  orders       OrderService[] // Relation to orders that use this service
+  billingRecords BillingRecord[] // Relation to billing records for the service
+}
+
+model OrderService {
+  id           String   @id @default(uuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  serviceId    String
+  service      Service  @relation(fields: [serviceId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model BillingRecord {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id])
+  serviceId    String
+  service      Service  @relation(fields: [serviceId], references: [id])
+  creditsUsed  Int
+  createdAt    DateTime @default(now())
+}
